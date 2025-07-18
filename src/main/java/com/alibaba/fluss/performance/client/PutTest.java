@@ -87,7 +87,7 @@ class PutTestConf {
     public long testTime = 600000;
     public long rowNumber = 1000000;
     public boolean partition = false;
-    public int bucketCount = -1;
+    public int bucketCount = 3;
 
     public boolean testByTime = true;
     public int writeColumnCount = -1;
