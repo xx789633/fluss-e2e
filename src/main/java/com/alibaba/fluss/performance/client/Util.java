@@ -51,7 +51,7 @@ public class Util {
             }
         }
         if (additionTsColumn) {
-            schemaBuilder.column("ts", DataTypes.TIMESTAMP_LTZ());
+            schemaBuilder.column("ts", DataTypes.TIMESTAMP());
         }
         if (partition) {
             schemaBuilder.column("ds", DataTypes.INT());
@@ -73,8 +73,8 @@ public class Util {
                         .distributedBy(bucketCount)
                         .build();
 
-        admin.createDatabase(BENCHMARK_DB, DatabaseDescriptor.EMPTY, false).get();
-        admin.createTable(TablePath.of(BENCHMARK_DB, tableName), descriptor, false).get();
+        admin.createDatabase(BENCHMARK_DB, DatabaseDescriptor.EMPTY, true).get();
+        admin.createTable(TablePath.of(BENCHMARK_DB, tableName), descriptor, true).get();
     }
 
     public static void dropTable(Admin admin, String tableName) throws ExecutionException, InterruptedException {

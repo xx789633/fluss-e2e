@@ -4,7 +4,9 @@ import com.alibaba.fluss.client.Connection;
 import com.alibaba.fluss.client.admin.Admin;
 import com.alibaba.fluss.config.ConfigOptions;
 import com.alibaba.fluss.config.Configuration;
+import com.alibaba.fluss.row.BinaryString;
 import com.alibaba.fluss.row.GenericRow;
+import com.alibaba.fluss.row.TimestampNtz;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.alibaba.fluss.metadata.Schema;
@@ -53,13 +55,13 @@ public abstract class PutTest {
     }
     abstract Runnable buildJob(int id);
 
-    protected void fillRecord(GenericRow record, long pk, Schema schema, Random random,
+    protected void fillRecord(GenericRow record, int pk, Schema schema, Random random,
                               List<String> writeColumns, boolean enableRandomPartialCol) {
         for (String columnName : writeColumns) {
             List<String> columns = schema.getColumnNames();
             int columnIndex = columns.indexOf(columnName);
             Schema.Column column = schema.getColumns().get(columnIndex);
-            long value = pk;
+            int value = pk;
             if (!schema.getPrimaryKeyColumnNames().contains(columnName) && enableRandomPartialCol) {
                 int randNum = random.nextInt(3);
                 if (randNum == 0) {
@@ -69,12 +71,18 @@ public abstract class PutTest {
             switch (column.getDataType().getTypeRoot()) {
                 case DOUBLE:
                     record.setField(columnIndex, value);
+                    break;
                 case INTEGER:
                 case SMALLINT:
                 case BIGINT:
                     record.setField(columnIndex, value);
+                    break;
                 case STRING:
-                    record.setField(columnIndex, String.valueOf(value));
+                    record.setField(columnIndex, BinaryString.fromString(String.valueOf(value)));
+                    break;
+                case TIMESTAMP_WITHOUT_TIME_ZONE:
+                    record.setField(columnIndex, TimestampNtz.fromMillis(System.currentTimeMillis()));
+                    break;
                 default:
                     throw new RuntimeException("unknown type " + column.getDataType());
             }

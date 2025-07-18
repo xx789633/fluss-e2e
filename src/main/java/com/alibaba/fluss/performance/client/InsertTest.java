@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.Random;
 import com.alibaba.fluss.client.table.writer.AppendWriter;
@@ -21,7 +22,7 @@ import com.alibaba.fluss.client.admin.Admin;
 public class InsertTest extends PutTest {
     public static final Logger LOG = LoggerFactory.getLogger(InsertTest.class);
 
-    private AtomicLong tic = new AtomicLong(0);
+    private AtomicInteger tic = new AtomicInteger(0);
     @Override
     Runnable buildJob(int id) {
         return new InsertJob(id);
@@ -62,7 +63,7 @@ public class InsertTest extends PutTest {
                 int i = 0;
                 List<String> writeColumns = Util.getWriteColumnsName(conf, schema);
                 while (true) {
-                    long pk = tic.incrementAndGet();
+                    int pk = tic.incrementAndGet();
                     ++i;
                     if(conf.testByTime) {
                         if (i % 1000 == 0) {
@@ -80,7 +81,7 @@ public class InsertTest extends PutTest {
                         }
                     }
                     GenericRow row = new GenericRow(schema.getColumnNames().size());
-                    fillRecord(row, id, schema, rand, writeColumns, insertTestConf.enableRandomPartialColumn);
+                    fillRecord(row, pk, schema, rand, writeColumns, insertTestConf.enableRandomPartialColumn);
                     if (conf.hasPk) {
                         upsertWriter.upsert(row);
                     } else {
