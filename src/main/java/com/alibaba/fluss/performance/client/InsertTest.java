@@ -38,8 +38,7 @@ public class InsertTest extends PutTest {
 
         @Override
         public void run() {
-            Configuration config = new Configuration();
-            config.setString(ConfigOptions.BOOTSTRAP_SERVERS.key(), "localhost:9092");
+            Configuration config = Util.loadConfiguration(confName);
             Connection conn = ConnectionFactory.createConnection(config);
             Admin admin = conn.getAdmin();
             try {

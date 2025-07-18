@@ -24,8 +24,7 @@ public abstract class PutTest {
     public void run(String confName) throws Exception {
         LOG.info("confName:{}", confName);
         this.confName = confName;
-        Configuration config = new Configuration();
-        config.setString(ConfigOptions.BOOTSTRAP_SERVERS.key(), "localhost:9092");
+        Configuration config = Util.loadConfiguration(confName);
         Connection conn = ConnectionFactory.createConnection(config);
         Util.createTable(conn, conf.partition, conf.tableName, conf.columnCount,
                 conf.bucketCount, conf.additionTsColumn,
