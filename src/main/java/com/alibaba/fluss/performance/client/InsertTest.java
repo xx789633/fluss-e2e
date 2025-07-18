@@ -38,10 +38,16 @@ public class InsertTest extends PutTest {
 
         @Override
         public void run() {
-            Configuration config = Util.loadConfiguration(confName);
-            Connection conn = ConnectionFactory.createConnection(config);
-            Admin admin = conn.getAdmin();
+            Admin admin = null;
+            Connection conn = null;
             try {
+                FlussConfig config = new FlussConfig();
+                ConfLoader.load(confName, "flussClient.", config);
+                Configuration flussConfig = new Configuration();
+                flussConfig.setString(ConfigOptions.BOOTSTRAP_SERVERS.key(), config.getBootstrapServers());
+
+                conn = ConnectionFactory.createConnection(flussConfig);
+                admin = conn.getAdmin();
                 Random rand = new Random();
                 TablePath path = new TablePath("benchmark_db", conf.tableName);
                 Table table = conn.getTable(path);
@@ -90,8 +96,12 @@ public class InsertTest extends PutTest {
                 e.printStackTrace();
             } finally {
                 try {
-                    admin.close();
-                    conn.close();
+                    if (admin != null) {
+                        admin.close();
+                    }
+                    if (conn != null) {
+                        conn.close();
+                    }
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

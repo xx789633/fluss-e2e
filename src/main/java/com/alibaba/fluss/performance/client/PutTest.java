@@ -1,6 +1,8 @@
 package com.alibaba.fluss.performance.client;
 
 import com.alibaba.fluss.client.Connection;
+import com.alibaba.fluss.config.ConfigOption;
+import com.alibaba.fluss.config.ConfigOptions;
 import com.alibaba.fluss.config.Configuration;
 import com.alibaba.fluss.metadata.TablePath;
 import com.alibaba.fluss.row.GenericRow;
@@ -9,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fluss.metadata.Schema;
 
 import com.alibaba.fluss.client.ConnectionFactory;
-import com.alibaba.fluss.config.ConfigOptions;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
@@ -24,8 +25,15 @@ public abstract class PutTest {
     public void run(String confName) throws Exception {
         LOG.info("confName:{}", confName);
         this.confName = confName;
-        Configuration config = Util.loadConfiguration(confName);
-        Connection conn = ConnectionFactory.createConnection(config);
+        ConfLoader.load(confName, "put.", conf);
+
+        FlussConfig config = new FlussConfig();
+        ConfLoader.load(confName, "flussClient.", config);
+
+        Configuration flussConfig = new Configuration();
+        flussConfig.setString(ConfigOptions.BOOTSTRAP_SERVERS.key(), config.getBootstrapServers());
+
+        Connection conn = ConnectionFactory.createConnection(flussConfig);
         Util.createTable(conn, conf.partition, conf.tableName, conf.columnCount,
                 conf.bucketCount, conf.additionTsColumn,
                 conf.hasPk, conf.dataColumnType);
