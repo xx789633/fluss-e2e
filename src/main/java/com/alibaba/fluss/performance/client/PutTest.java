@@ -24,7 +24,6 @@ public abstract class PutTest {
     public void run(String confName) throws Exception {
         LOG.info("confName:{}", confName);
         this.confName = confName;
-        Reporter reporter = new Reporter(confName);
         Configuration config = new Configuration();
         config.setString(ConfigOptions.BOOTSTRAP_SERVERS.key(), "localhost:9092");
         Connection conn = ConnectionFactory.createConnection(config);
@@ -42,7 +41,7 @@ public abstract class PutTest {
             threads[i].join();
         }
         LOG.info("finished, {} rows has written", totalCount.get());
-        
+
         conn.getAdmin().dropTable(new TablePath("benchmark_db", conf.tableName), true).get();
     }
     abstract Runnable buildJob(int id);

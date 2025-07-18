@@ -90,6 +90,12 @@ public class InsertTest extends PutTest {
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
+                try {
+                    admin.close();
+                    conn.close();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
