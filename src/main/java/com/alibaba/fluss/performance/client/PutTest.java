@@ -2,6 +2,7 @@ package com.alibaba.fluss.performance.client;
 
 import com.alibaba.fluss.client.Connection;
 import com.alibaba.fluss.config.Configuration;
+import com.alibaba.fluss.metadata.TablePath;
 import com.alibaba.fluss.row.GenericRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,8 @@ public abstract class PutTest {
             threads[i].join();
         }
         LOG.info("finished, {} rows has written", totalCount.get());
+        
+        conn.getAdmin().dropTable(new TablePath("benchmark_db", conf.tableName), true).get();
     }
     abstract Runnable buildJob(int id);
 

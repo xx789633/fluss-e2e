@@ -1,6 +1,7 @@
 package com.alibaba.fluss.performance.client;
 
 import com.alibaba.fluss.client.ConnectionFactory;
+import com.alibaba.fluss.client.table.Table;
 import com.alibaba.fluss.config.ConfigOptions;
 import com.alibaba.fluss.config.Configuration;
 import com.alibaba.fluss.metadata.Schema;
@@ -12,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.Random;
+import com.alibaba.fluss.client.table.writer.AppendWriter;
+import com.alibaba.fluss.client.table.writer.UpsertWriter;
 import com.alibaba.fluss.client.Connection;
 import com.alibaba.fluss.client.admin.Admin;
 
@@ -41,8 +44,16 @@ public class InsertTest extends PutTest {
             Admin admin = conn.getAdmin();
             try {
                 Random rand = new Random();
-                TablePath path = new TablePath("benchmark_db", conf.tableName);;
+                TablePath path = new TablePath("benchmark_db", conf.tableName);
+                Table table = conn.getTable(path);
                 Schema schema = admin.getTableSchema(path).get().getSchema();
+                UpsertWriter upsertWriter = null;
+                AppendWriter appendWriter = null;
+                if (conf.hasPk) {
+                    upsertWriter = table.newUpsert().createWriter();
+                } else {
+                    appendWriter = table.newAppend().createWriter();
+                }
                 int i = 0;
                 List<String> writeColumns = Util.getWriteColumnsName(conf, schema);
                 while (true) {
@@ -65,6 +76,16 @@ public class InsertTest extends PutTest {
                     }
                     GenericRow row = new GenericRow(schema.getColumnNames().size());
                     fillRecord(row, id, schema, rand, writeColumns, insertTestConf.enableRandomPartialColumn);
+                    if (conf.hasPk) {
+                        upsertWriter.upsert(row);
+                    } else {
+                        appendWriter.append(row);
+                    }
+                }
+                if (conf.hasPk) {
+                    upsertWriter.flush();
+                } else {
+                    appendWriter.flush();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
