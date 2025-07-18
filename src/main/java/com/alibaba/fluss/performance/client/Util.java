@@ -9,14 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import com.alibaba.fluss.config.Configuration;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
-import com.alibaba.fluss.client.Connection;
 
 public class Util {
     public static Logger LOG = LoggerFactory.getLogger(Util.class);
@@ -41,7 +33,7 @@ public class Util {
         return columns;
     }
 
-    public static void createTable(Connection conn, boolean partition, String tableName,
+    public static void createTable(Admin admin, boolean partition, String tableName,
                                    int columnCount, int bucketCount,
                                    boolean additionTsColumn, boolean hasPk, String dataColumnType) throws ExecutionException, InterruptedException {
         Schema.Builder schemaBuilder = Schema.newBuilder();
@@ -74,7 +66,10 @@ public class Util {
                         .schema(schemaBuilder.build())
                         .distributedBy(bucketCount)
                         .build();
-        Admin admin = conn.getAdmin();
         admin.createTable(TablePath.of("benchmark_db", tableName), descriptor, false).get();
+    }
+
+    public static void dropTable(Admin admin, String tableName) throws ExecutionException, InterruptedException {
+        admin.dropTable(new TablePath("benchmark_db", tableName), true).get();
     }
 }

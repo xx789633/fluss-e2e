@@ -1,10 +1,9 @@
 package com.alibaba.fluss.performance.client;
 
 import com.alibaba.fluss.client.Connection;
-import com.alibaba.fluss.config.ConfigOption;
+import com.alibaba.fluss.client.admin.Admin;
 import com.alibaba.fluss.config.ConfigOptions;
 import com.alibaba.fluss.config.Configuration;
-import com.alibaba.fluss.metadata.TablePath;
 import com.alibaba.fluss.row.GenericRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +33,8 @@ public abstract class PutTest {
         flussConfig.setString(ConfigOptions.BOOTSTRAP_SERVERS.key(), config.getBootstrapServers());
 
         Connection conn = ConnectionFactory.createConnection(flussConfig);
-        Util.createTable(conn, conf.partition, conf.tableName, conf.columnCount,
+        Admin admin = conn.getAdmin();
+        Util.createTable(admin, conf.partition, conf.tableName, conf.columnCount,
                 conf.bucketCount, conf.additionTsColumn,
                 conf.hasPk, conf.dataColumnType);
 
@@ -49,7 +49,7 @@ public abstract class PutTest {
         }
         LOG.info("finished, {} rows has written", totalCount.get());
 
-        conn.getAdmin().dropTable(new TablePath("benchmark_db", conf.tableName), true).get();
+        Util.dropTable(admin, conf.tableName);
     }
     abstract Runnable buildJob(int id);
 
