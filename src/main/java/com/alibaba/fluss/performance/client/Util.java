@@ -80,4 +80,22 @@ public class Util {
         admin.dropTable(new TablePath(BENCHMARK_DB, tableName), true).get();
         admin.dropDatabase(BENCHMARK_DB, false, true);
     }
+
+    public static String alignWithColumnSize(long value, int columnSize) {
+        String val = String.valueOf(value);
+        int len = val.length();
+        if (len < columnSize) {
+            int deltaLen = columnSize - len;
+            StringBuilder sb = new StringBuilder();
+            while (deltaLen-- > 0) {
+                sb.append('0');
+            }
+            sb.append(val);
+            return sb.toString();
+        } else if (len > columnSize) {
+            return val.substring(0, columnSize);
+        } else {
+            return val;
+        }
+    }
 }

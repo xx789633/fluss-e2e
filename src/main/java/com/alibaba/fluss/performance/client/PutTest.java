@@ -82,16 +82,21 @@ public abstract class PutTest {
                 }
             }
             switch (column.getDataType().getTypeRoot()) {
-                case INTEGER:
+                case TINYINT:
                 case SMALLINT:
-                case BIGINT:
+                case INTEGER:
                     record.setField(columnIndex, value);
                     break;
                 case STRING:
-                    record.setField(columnIndex, BinaryString.fromString(String.valueOf(value)));
+                    record.setField(columnIndex, BinaryString.fromString(Util.alignWithColumnSize(value, conf.columnSize)));
                     break;
                 case TIMESTAMP_WITHOUT_TIME_ZONE:
                     record.setField(columnIndex, TimestampNtz.fromMillis(System.currentTimeMillis()));
+                    break;
+                case BINARY:
+                    byte[] bytes = new byte[conf.columnSize];
+                    random.nextBytes(bytes);
+                    record.setField(columnIndex, bytes);
                     break;
                 default:
                     throw new RuntimeException("unknown type " + column.getDataType());
@@ -111,6 +116,7 @@ class PutTestConf {
 
     public boolean testByTime = true;
     public int writeColumnCount = -1;
+    public boolean fillTimestampWithNow = true;
     public boolean additionTsColumn = true;
 
     public String tableName = "fluss_perf";
