@@ -23,7 +23,7 @@ import com.alibaba.fluss.client.admin.Admin;
 public class InsertTest extends PutTest {
     public static final Logger LOG = LoggerFactory.getLogger(InsertTest.class);
 
-    private AtomicInteger tic = new AtomicInteger(0);
+    private AtomicLong tic = new AtomicLong(0);
     @Override
     Runnable buildJob(int id) {
         return new InsertJob(id);
@@ -59,7 +59,7 @@ public class InsertTest extends PutTest {
                 int i = 0;
                 List<String> writeColumns = Util.getWriteColumnsName(conf, schema);
                 while (true) {
-                    int pk = tic.incrementAndGet();
+                    long pk = tic.incrementAndGet();
                     ++i;
                     if(conf.testByTime) {
                         if (i % 1000 == 0) {

@@ -56,14 +56,14 @@ public abstract class PutTest {
     }
     abstract Runnable buildJob(int id);
 
-    protected void fillRecord(GenericRow record, int pk, TableInfo tableInfo, Random random,
+    protected void fillRecord(GenericRow record, long pk, TableInfo tableInfo, Random random,
                               List<String> writeColumns, boolean enableRandomPartialCol) {
         Schema schema = tableInfo.getSchema();
         for (String columnName : writeColumns) {
             List<String> columns = schema.getColumnNames();
             int columnIndex = columns.indexOf(columnName);
             Schema.Column column = schema.getColumns().get(columnIndex);
-            int value = pk;
+            long value = pk;
             if (!schema.getPrimaryKeyColumnNames().contains(columnName) && enableRandomPartialCol) {
                 int randNum = random.nextInt(3);
                 if (randNum == 0) {
@@ -85,6 +85,9 @@ public abstract class PutTest {
                 case TINYINT:
                 case SMALLINT:
                 case INTEGER:
+                    record.setField(columnIndex, (int) value);
+                    break;
+                case BIGINT:
                     record.setField(columnIndex, value);
                     break;
                 case STRING:
