@@ -40,9 +40,7 @@ public class Util {
                                    int columnCount, int bucketCount,
                                    boolean additionTsColumn, boolean hasPk, String dataColumnType) throws ExecutionException, InterruptedException {
         Schema.Builder schemaBuilder = Schema.newBuilder();
-        if (hasPk) {
-            schemaBuilder.column("id", DataTypes.INT());
-        }
+        schemaBuilder.column("id", DataTypes.INT());
         for (int i = 0; i < columnCount; ++i) {
             if (dataColumnType == "text") {
                 schemaBuilder.column("name" + i, DataTypes.STRING());
@@ -56,23 +54,24 @@ public class Util {
         if (partition) {
             schemaBuilder.column("ds", DataTypes.INT());
         }
-        if (hasPk) {
-            List<String> primaryKeys = new ArrayList<>();
-            primaryKeys.add("id");
-            if (partition) {
-                primaryKeys.add("ds");
-            }
-            schemaBuilder.primaryKey(primaryKeys);
+        List<String> primaryKeys = new ArrayList<>();
+        primaryKeys.add("id");
+        if (partition) {
+            primaryKeys.add("ds");
         }
+        schemaBuilder.primaryKey(primaryKeys);
         TableDescriptor.Builder tableBuilder = TableDescriptor.builder();
         if (partition) {
             tableBuilder.partitionedBy("ds");
         }
+        if (bucketCount > 0) {
+            tableBuilder.distributedBy(bucketCount, "id");
+        } else {
+            tableBuilder.distributedBy(null, Collections.singletonList("id"));
+        }
         TableDescriptor descriptor = tableBuilder
                         .schema(schemaBuilder.build())
-                        .distributedBy(bucketCount)
                         .build();
-
         admin.createDatabase(BENCHMARK_DB, DatabaseDescriptor.EMPTY, true).get();
         admin.createTable(TablePath.of(BENCHMARK_DB, tableName), descriptor, true).get();
     }

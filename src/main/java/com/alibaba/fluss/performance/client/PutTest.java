@@ -4,6 +4,7 @@ import com.alibaba.fluss.client.Connection;
 import com.alibaba.fluss.client.admin.Admin;
 import com.alibaba.fluss.config.ConfigOptions;
 import com.alibaba.fluss.config.Configuration;
+import com.alibaba.fluss.metadata.TableInfo;
 import com.alibaba.fluss.row.BinaryString;
 import com.alibaba.fluss.row.GenericRow;
 import com.alibaba.fluss.row.TimestampNtz;
@@ -55,8 +56,9 @@ public abstract class PutTest {
     }
     abstract Runnable buildJob(int id);
 
-    protected void fillRecord(GenericRow record, int pk, Schema schema, Random random,
+    protected void fillRecord(GenericRow record, int pk, TableInfo tableInfo, Random random,
                               List<String> writeColumns, boolean enableRandomPartialCol) {
+        Schema schema = tableInfo.getSchema();
         for (String columnName : writeColumns) {
             List<String> columns = schema.getColumnNames();
             int columnIndex = columns.indexOf(columnName);
@@ -66,6 +68,17 @@ public abstract class PutTest {
                 int randNum = random.nextInt(3);
                 if (randNum == 0) {
                     continue;
+                }
+            }
+
+            if (tableInfo.getPartitionKeys().size() == 1 && tableInfo.getPartitionKeys().get(0) == columnName) {
+                if (conf.partition) {
+                    value = random.nextInt(conf.partitionCount + conf.partitionRatio);
+                    if (value > conf.partitionCount) {
+                        value = 0;
+                    }
+                } else {
+                    value = 0;
                 }
             }
             switch (column.getDataType().getTypeRoot()) {
@@ -92,7 +105,9 @@ class PutTestConf {
     public long testTime = 600000;
     public long rowNumber = 1000000;
     public boolean partition = false;
-    public int bucketCount = 3;
+    public int bucketCount = -1;
+    public int partitionRatio = 10;
+    public int partitionCount = 30;
 
     public boolean testByTime = true;
     public int writeColumnCount = -1;
