@@ -69,9 +69,6 @@ public abstract class PutTest {
                 }
             }
             switch (column.getDataType().getTypeRoot()) {
-                case DOUBLE:
-                    record.setField(columnIndex, value);
-                    break;
                 case INTEGER:
                 case SMALLINT:
                 case BIGINT:
