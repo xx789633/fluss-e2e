@@ -1,0 +1,44 @@
+.cache
+.classpath
+.idea/*
+!.idea/vcs.xml
+!.idea/icon.png
+.metadata
+.settings
+.project
+target
+.version.properties
+*.class
+*.iml
+*.swp
+*.jar
+*.log
+*.pyc
+build-target
+*.ipr
+*.iws
+dependency-reduced-pom.xml
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
+
+# website & docs
+website/node_modules
+website/build
+website/.docusaurus
+website/.cache-loader
+website/.env.local
+website/.env.development.local
+website/.env.test.local
+website/.env.production.local
+website/npm-debug.log*
+website/yarn-debug.log*
+website/yarn-error.log*
+website/package-lock.json
+website/versioned_docs
+website/versioned_sidebars
+website/versions.json
+website/pnpm-lock.yaml
