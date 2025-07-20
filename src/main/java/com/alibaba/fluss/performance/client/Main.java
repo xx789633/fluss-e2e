@@ -8,7 +8,7 @@ public class Main {
 
     public static void main(String[] args) {
         if (args.length != 2) {
-            LOG.error("invalid args\njava -jar xxxx.jar CONF_NAME METHOD\n METHOD = INSERT/GET/SCAN");
+            LOG.error("invalid args\njava -jar xxxx.jar CONF_NAME METHOD\n METHOD = INSERT/GET");
             return;
         }
         try {
