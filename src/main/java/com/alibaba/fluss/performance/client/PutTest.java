@@ -31,15 +31,17 @@ public abstract class PutTest {
 
         FlussConfig config = new FlussConfig();
         ConfLoader.load(confName, "flussClient.", config);
-
+        this.init();
         Configuration flussConfig = new Configuration();
         flussConfig.setString(ConfigOptions.BOOTSTRAP_SERVERS.key(), config.getBootstrapServers());
 
         Connection conn = ConnectionFactory.createConnection(flussConfig);
         Admin admin = conn.getAdmin();
-        Util.createTable(admin, conf.partition, conf.tableName, conf.columnCount,
-                conf.bucketCount, conf.additionTsColumn,
-                conf.hasPk, conf.dataColumnType);
+        if (conf.createTableBeforeRun) {
+            Util.createTable(admin, conf.partition, conf.tableName, conf.columnCount,
+                    conf.bucketCount, conf.additionTsColumn,
+                    conf.hasPk, conf.dataColumnType);
+        }
 
         targetTime = System.currentTimeMillis() + conf.testTime;
         Thread[] threads = new Thread[conf.threadSize];
@@ -52,9 +54,18 @@ public abstract class PutTest {
         }
         LOG.info("finished, {} rows has written", totalCount.get());
 
-        Util.dropTable(admin, conf.tableName);
+        if (conf.deleteTableAfterDone) {
+            Util.dropTable(admin, conf.tableName);
+        }
     }
     abstract Runnable buildJob(int id);
+
+    abstract void init() throws Exception;
+
+    protected void fillRecord(GenericRow record, long pk, TableInfo tableInfo, Random random,
+                              List<String> writeColumns) {
+        fillRecord(record, pk, tableInfo, random, writeColumns, false);
+    }
 
     protected void fillRecord(GenericRow record, long pk, TableInfo tableInfo, Random random,
                               List<String> writeColumns, boolean enableRandomPartialCol) {
@@ -119,7 +130,7 @@ class PutTestConf {
 
     public boolean testByTime = true;
     public int writeColumnCount = -1;
-    public boolean fillTimestampWithNow = true;
+    public boolean deleteTableAfterDone = true;
     public boolean additionTsColumn = true;
 
     public String tableName = "fluss_perf";
@@ -127,4 +138,5 @@ class PutTestConf {
     public int columnSize = 10;
     public boolean hasPk = true;
     public String dataColumnType = "text";
+    public boolean createTableBeforeRun = true;
 }

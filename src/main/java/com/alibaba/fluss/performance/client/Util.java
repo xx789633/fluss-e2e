@@ -39,13 +39,14 @@ public class Util {
     public static void createTable(Admin admin, boolean partition, String tableName,
                                    int columnCount, int bucketCount,
                                    boolean additionTsColumn, boolean hasPk, String dataColumnType) throws ExecutionException, InterruptedException {
+        admin.createDatabase(BENCHMARK_DB, DatabaseDescriptor.EMPTY, true).get();
+        admin.dropTable(new TablePath(BENCHMARK_DB, tableName), true).get();
+
         Schema.Builder schemaBuilder = Schema.newBuilder();
         schemaBuilder.column("id", DataTypes.INT());
         for (int i = 0; i < columnCount; ++i) {
             if (dataColumnType == "text") {
                 schemaBuilder.column("name" + i, DataTypes.STRING());
-            } else if (dataColumnType == "int") {
-                schemaBuilder.column("name" + i, DataTypes.INT());
             }
         }
         if (additionTsColumn) {
@@ -72,13 +73,11 @@ public class Util {
         TableDescriptor descriptor = tableBuilder
                         .schema(schemaBuilder.build())
                         .build();
-        admin.createDatabase(BENCHMARK_DB, DatabaseDescriptor.EMPTY, true).get();
         admin.createTable(TablePath.of(BENCHMARK_DB, tableName), descriptor, true).get();
     }
 
     public static void dropTable(Admin admin, String tableName) throws ExecutionException, InterruptedException {
         admin.dropTable(new TablePath(BENCHMARK_DB, tableName), true).get();
-        admin.dropDatabase(BENCHMARK_DB, false, true);
     }
 
     public static String alignWithColumnSize(long value, int columnSize) {
