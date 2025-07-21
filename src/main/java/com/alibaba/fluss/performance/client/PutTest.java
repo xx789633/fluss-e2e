@@ -45,6 +45,7 @@ public abstract class PutTest {
 
         targetTime = System.currentTimeMillis() + conf.testTime;
         Thread[] threads = new Thread[conf.threadSize];
+        // start
         for (int i = 0; i < threads.length; ++i) {
             threads[i] = new Thread(buildJob(i));
             threads[i].start();
