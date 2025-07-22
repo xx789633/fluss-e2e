@@ -30,6 +30,7 @@ public class GetTest {
         LOG.info("confName:{}", confName);
         this.confName = confName;
         ConfLoader.load(confName, "get.", conf);
+        provider = new ParamsProvider(conf.keyRangeParams);
         FlussConfig config = new FlussConfig();
         ConfLoader.load(confName, "flussClient.", config);
         Configuration flussConfig = new Configuration();
