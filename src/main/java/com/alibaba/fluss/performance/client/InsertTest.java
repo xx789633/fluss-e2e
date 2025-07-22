@@ -4,7 +4,6 @@ import com.alibaba.fluss.client.ConnectionFactory;
 import com.alibaba.fluss.client.table.Table;
 import com.alibaba.fluss.config.ConfigOptions;
 import com.alibaba.fluss.config.Configuration;
-import com.alibaba.fluss.metadata.Schema;
 import com.alibaba.fluss.metadata.TableInfo;
 import com.alibaba.fluss.metadata.TablePath;
 import com.alibaba.fluss.row.GenericRow;
@@ -16,7 +15,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.Random;
 import com.alibaba.fluss.client.table.writer.UpsertWriter;
 import com.alibaba.fluss.client.Connection;
-import com.alibaba.fluss.client.admin.Admin;
 
 public class InsertTest extends PutTest {
     public static final Logger LOG = LoggerFactory.getLogger(InsertTest.class);

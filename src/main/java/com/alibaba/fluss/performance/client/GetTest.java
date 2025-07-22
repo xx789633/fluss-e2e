@@ -6,11 +6,9 @@ import com.alibaba.fluss.client.admin.Admin;
 import com.alibaba.fluss.client.lookup.LookupResult;
 import com.alibaba.fluss.client.lookup.Lookuper;
 import com.alibaba.fluss.client.table.Table;
-import com.alibaba.fluss.client.table.writer.UpsertWriter;
 import com.alibaba.fluss.config.ConfigOptions;
 import com.alibaba.fluss.config.Configuration;
 import com.alibaba.fluss.metadata.Schema;
-import com.alibaba.fluss.metadata.TableInfo;
 import com.alibaba.fluss.performace.params.ParamsProvider;
 import com.alibaba.fluss.metadata.TablePath;
 import com.alibaba.fluss.row.GenericRow;
@@ -91,7 +89,7 @@ public class GetTest {
                             break;
                         }
                     }
-                    GenericRow get = new GenericRow(schema.getColumnNames().size());
+                    GenericRow get = new GenericRow(schema.getPrimaryKeyIndexes().length);
                     for (int j = 0; j < schema.getPrimaryKeyIndexes().length; ++j) {
                         get.setField(j, provider.get(j));
                     }
@@ -126,10 +124,7 @@ class GetTestConf {
     public int threadSize = 10;
     public long testTime = 600000;
     public String tableName = "fluss_perf";
-    public boolean singleExecutionPool = true;
-    public boolean vacuumTableBeforeRun = true;
     public String keyRangeParams;
     public boolean async = true;
     public boolean deleteTableAfterDone = false;
-    public boolean dumpMemoryStat = false;
 }

@@ -1,6 +1,5 @@
 package com.alibaba.fluss.performance.client;
 
-import com.alibaba.fluss.client.Connection;
 import com.alibaba.fluss.client.admin.Admin;
 import com.alibaba.fluss.config.ConfigOptions;
 import com.alibaba.fluss.config.Configuration;
