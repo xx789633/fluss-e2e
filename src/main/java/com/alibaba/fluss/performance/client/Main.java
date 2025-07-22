@@ -25,6 +25,5 @@ public class Main {
         } catch (Exception e) {
             LOG.error("", e);
         }
-        System.out.println("Hello world!");
     }
 }
