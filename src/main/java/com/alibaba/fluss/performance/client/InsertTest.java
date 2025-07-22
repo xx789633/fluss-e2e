@@ -12,10 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.Random;
-import com.alibaba.fluss.client.table.writer.AppendWriter;
 import com.alibaba.fluss.client.table.writer.UpsertWriter;
 import com.alibaba.fluss.client.Connection;
 import com.alibaba.fluss.client.admin.Admin;
@@ -45,19 +43,16 @@ public class InsertTest extends PutTest {
 
         @Override
         public void run() {
-            Admin admin = null;
             Connection conn = null;
             try {
                 FlussConfig config = new FlussConfig();
                 ConfLoader.load(confName, "flussClient.", config);
                 Configuration flussConfig = new Configuration();
                 flussConfig.setString(ConfigOptions.BOOTSTRAP_SERVERS.key(), config.getBootstrapServers());
-
                 conn = ConnectionFactory.createConnection(flussConfig);
-                admin = conn.getAdmin();
+
                 Random rand = new Random();
-                TablePath path = new TablePath("benchmark_db", conf.tableName);
-                Table table = conn.getTable(path);
+                Table table = conn.getTable(new TablePath("benchmark_db", conf.tableName));
                 TableInfo tableInfo = table.getTableInfo();
                 UpsertWriter upsertWriter = table.newUpsert().createWriter();
                 int i = 0;
@@ -88,9 +83,6 @@ public class InsertTest extends PutTest {
                 e.printStackTrace();
             } finally {
                 try {
-                    if (admin != null) {
-                        admin.close();
-                    }
                     if (conn != null) {
                         conn.close();
                     }

@@ -16,6 +16,9 @@ public class Main {
                 case "INSERT":
                     new InsertTest().run(args[0]);
                     break;
+                case "GET":
+                    new GetTest().run(args[0]);
+                    break;
                 default:
                     throw new Exception("unknow method " + args[1]);
             }

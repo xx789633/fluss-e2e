@@ -34,9 +34,7 @@ public abstract class PutTest {
         this.init();
         Configuration flussConfig = new Configuration();
         flussConfig.setString(ConfigOptions.BOOTSTRAP_SERVERS.key(), config.getBootstrapServers());
-
-        Connection conn = ConnectionFactory.createConnection(flussConfig);
-        Admin admin = conn.getAdmin();
+        Admin admin = ConnectionFactory.createConnection(flussConfig).getAdmin();
         if (conf.createTableBeforeRun) {
             Util.createTable(admin, conf.partition, conf.tableName, conf.columnCount,
                     conf.bucketCount, conf.additionTsColumn,
