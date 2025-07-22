@@ -14,7 +14,10 @@ java -jar target/fluss-e2e-performance-tool-1.0-SNAPSHOT.jar test_insert.conf IN
 
 - You must write data to tables and set the deleteTableAfterDone parameter to false to ensure that the tables contain data and can be updated.
 
-#### 
+#### Procedure
+
+Before the test is performed, you need to only add the writeColumnCount parameter. This parameter specifies the number of table columns where data is written. The columns are of the TEXT data type. In this topic, the parameter is set to 50% of the columnCount parameter value.
+
 Execute the following statement to perform a test:
 ```
 java -jar target/fluss-e2e-performance-tool-1.0-SNAPSHOT.jar test_update_part.conf INSERT
