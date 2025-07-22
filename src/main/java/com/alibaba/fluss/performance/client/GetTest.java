@@ -38,9 +38,7 @@ public class GetTest {
         Admin admin = ConnectionFactory.createConnection(flussConfig).getAdmin();
 
         Schema schema =  admin.getTableSchema(new TablePath("benchmark_db", conf.tableName)).get().getSchema();
-        if (schema == null) {
-            throw new Exception("table not found");
-        } else if (schema.getPrimaryKeyColumnNames().size() != provider.size()) {
+        if (schema.getPrimaryKeyColumnNames().size() != provider.size()) {
             throw new Exception(
                     "table has " + schema.getPrimaryKeyColumnNames().size() + " pk columns, but test.params only has "
                             + provider.size() + " columns");
